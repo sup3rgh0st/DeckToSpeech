@@ -111,6 +111,8 @@ class MyClient(discord.Client):
 					await self.my_voice_channel.disconnect()
 				self.log_info('Joining voice channel {0.channel}'.format(after))
 				self.my_voice_channel = await after.channel.connect()
+		if member.id == int(212616695032840193):
+			self.play_indexed_audio("JoeJohn.wav")
 	
 
 client = MyClient()
