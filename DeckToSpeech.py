@@ -32,7 +32,8 @@ class bcolors:
 class MyClient(discord.Client):
 
 	my_voice_channel = None
-	
+	playQueue = []
+
 	
 	def log_info(self, msg):
 		print('{0}[INFO]{1} {2}'.format(bcolors.OKGREEN, bcolors.WHITE, msg))
@@ -44,6 +45,15 @@ class MyClient(discord.Client):
 		
 	def log_error(self, msg):
 		print('{0}[ERROR]{1} {2}'.format(bcolors.FAIL, bcolors.WHITE, msg))
+
+	def check_play_queue(self):
+		# If play queue is empty do nothing, else play next sound in queue
+		if(len(self.playQueue) == 0):
+			pass
+		else:
+			nextSound = self.playQueue.pop(0)
+			self.play_indexed_audio(nextSound)	
+			self.log_warning('Playing sound \'{0}\' from the queue'.format(nextSound))
 
 		
 	def play_indexed_audio(self, index):
@@ -60,7 +70,7 @@ class MyClient(discord.Client):
 		file_path = soundlist['directory'] + soundlist[index]
 		if exists(file_path):
 			self.log_info('Playing sound with path {0}'.format(file_path))
-			self.my_voice_channel.play(discord.FFmpegOpusAudio(executable="E:/Projects/DeckToSpeech/ffmpeg.exe", source=file_path))
+			self.my_voice_channel.play(discord.FFmpegOpusAudio(executable="E:/Projects/DeckToSpeech/ffmpeg.exe", source=file_path), after=self.check_play_queue)
 		else:
 			self.log_error('Path {0} does not exist'.format(file_path))
 
@@ -74,6 +84,7 @@ class MyClient(discord.Client):
 			self.log_warning('Attempted to stop audio while there was no audio.')
 			return
 		
+		self.playQueue = []
 		self.log_info('Stopping active audio')
 		self.my_voice_channel.stop()
 
@@ -84,7 +95,11 @@ class MyClient(discord.Client):
 				if message == 'stop':
 					self.stop_active_audio()
 				else:
-					self.play_indexed_audio(message)
+					if(self.my_voice_channel.is_playing()):
+						self.playQueue.append(message)
+						self.log_warning('Added sound \'{0}\' to the queue'.format(message))
+					else:
+						self.play_indexed_audio(message)
 		except websockets.exceptions.ConnectionClosedError:
 			return
 	
