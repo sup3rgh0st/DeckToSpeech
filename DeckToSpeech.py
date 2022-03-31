@@ -46,14 +46,14 @@ class MyClient(discord.Client):
 	def log_error(self, msg):
 		print('{0}[ERROR]{1} {2}'.format(bcolors.FAIL, bcolors.WHITE, msg))
 
-	def check_play_queue(self):
+	def check_play_queue(self, unused):
 		# If play queue is empty do nothing, else play next sound in queue
 		if(len(self.playQueue) == 0):
 			pass
 		else:
 			nextSound = self.playQueue.pop(0)
-			self.play_indexed_audio(nextSound)	
-			self.log_warning('Playing sound \'{0}\' from the queue'.format(nextSound))
+			self.log_info('Playing sound \'{0}\' from the queue'.format(nextSound))
+			self.play_indexed_audio(nextSound)
 
 		
 	def play_indexed_audio(self, index):
@@ -97,7 +97,7 @@ class MyClient(discord.Client):
 				else:
 					if(self.my_voice_channel.is_playing()):
 						self.playQueue.append(message)
-						self.log_warning('Added sound \'{0}\' to the queue'.format(message))
+						self.log_info('Added sound \'{0}\' to the queue'.format(message))
 					else:
 						self.play_indexed_audio(message)
 		except websockets.exceptions.ConnectionClosedError:
