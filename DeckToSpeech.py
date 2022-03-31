@@ -70,7 +70,7 @@ class MyClient(discord.Client):
 		file_path = soundlist['directory'] + soundlist[index]
 		if exists(file_path):
 			self.log_info('Playing sound with path {0}'.format(file_path))
-			self.my_voice_channel.play(discord.FFmpegOpusAudio(executable="E:/Projects/DeckToSpeech/ffmpeg.exe", source=file_path), after=self.check_play_queue)
+			self.my_voice_channel.play(discord.FFmpegOpusAudio(source=file_path), after=self.check_play_queue)
 		else:
 			self.log_error('Path {0} does not exist'.format(file_path))
 
